@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
     s.name             = 'PYH5Bridge'
-    s.version          = '1.1.4'
+    s.version          = '1.2.0'
     s.summary          = 'PYH5Bridge SDK'
     
     # This description is used to generate tags and improve search results.
