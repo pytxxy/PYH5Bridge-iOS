@@ -14,7 +14,7 @@ PYH5Bridge提供源码手动集成及CocoaPods集成这2种集成方式，可任
 在工程的`Podfile`文件中添加：
 
 ```objc
-	pod 'PYH5Bridge', '~> 1.1.4'
+	pod 'PYH5Bridge', '~> 1.2.0'
 ```  
 保存并执行`pod install`命令，即可将PYH5Bridge集成到已有工程中。  
 若要更新版本，执行`pod update`命令即可将`PYH5Bridge`更新到最新版本。
