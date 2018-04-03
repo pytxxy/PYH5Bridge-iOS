@@ -1,0 +1,6 @@
+framework module PYH5Bridge {
+  umbrella header "PYH5Bridge-umbrella.h"
+
+  export *
+  module * { export * }
+}
