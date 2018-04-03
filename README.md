@@ -17,7 +17,7 @@ PYH5Bridge提供源码手动集成及CocoaPods集成这2种集成方式，可任
 	pod 'PYH5Bridge', '~> 1.2.0'
 ```  
 保存并执行`pod install`命令，即可将PYH5Bridge集成到已有工程中。  
-若要更新版本，执行`pod update`命令即可将`PYH5Bridge`更新到最新版本。
+若要更新版本，执行`pod update`命令即可将`PYH5Bridge`更新到最新兼容版本。
 
 #### 2.2 手动集成
 **2.2.1** 下载并解压`PYH5Bridge`源码，将`PYH5Bridge/Classes`及`PYH5Bridge/Assets`目录下的所有文件先复制到项目路径下，然后在Xcode中通过"`Add Files to project`"的方式添加。  

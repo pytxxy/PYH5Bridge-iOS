@@ -1,6 +1,0 @@
-framework module Pods_PYH5Bridge_Tests {
-  umbrella header "Pods-PYH5Bridge_Tests-umbrella.h"
-
-  export *
-  module * { export * }
-}
