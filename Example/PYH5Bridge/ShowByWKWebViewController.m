@@ -36,7 +36,7 @@
     [self.view addSubview:self.baseWebView];
     
 #warning 需要替换为真正的URL
-    NSURL *url = [[NSURL alloc] initWithString:@"https://m1.tianxiaxinyong.com/cooperation/crp-webview/index.html?channel=43621086"];
+    NSURL *url = [[NSURL alloc] initWithString:@"** 使用鹏元提供的渠道url **"];
     NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url];
     [self.baseWebView loadRequest:request];
     
