@@ -120,10 +120,11 @@
         return;
     }
     
+    __weak __typeof(self)weakSelf = self;
     void (^takePhotoBlock)(void) = ^{
         
-        _hasAuthority = [PYCUtil hasCameraRights:nil];
-        if (!_hasAuthority) {
+        weakSelf.hasAuthority = [PYCUtil hasCameraRights:nil];
+        if (!weakSelf.hasAuthority) {
             if ([[UIDevice currentDevice].systemVersion floatValue] >= 8.0) {
                 UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"请在设备的“设置”选项中，允许应用访问您的相机" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"去设置", nil];
                 alert.tag = 1000;
@@ -139,15 +140,15 @@
         }
         
         UIViewController *parentViewController = nil;
-        if ([_delegate respondsToSelector:@selector(showHUDParentViewController)]) {
-             parentViewController = [_delegate showHUDParentViewController];
+        if ([weakSelf.delegate respondsToSelector:@selector(showHUDParentViewController)]) {
+             parentViewController = [weakSelf.delegate showHUDParentViewController];
         }
        
         [[PYCImagePickerController sharedInstance] showWithControlType:PYCControlTypeTakePhoto
                                                     maxChooseImageNum:1
                                                  parentViewController:parentViewController
                                                         pickerDelegate:self
-                                                     cameraDeviceType:_cameraDeviceType];
+                                                     cameraDeviceType:weakSelf.cameraDeviceType];
     };
     
     if ([_actionType isEqualToString:@"0"]) {

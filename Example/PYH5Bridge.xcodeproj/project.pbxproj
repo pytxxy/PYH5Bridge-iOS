@@ -213,7 +213,6 @@
 				6003F587195388D20070C39A /* Frameworks */,
 				6003F588195388D20070C39A /* Resources */,
 				BF1BF0AB147995BB9CA806DA /* [CP] Embed Pods Frameworks */,
-				5CC3AB8EF1FBD743A5FBA01A /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -232,8 +231,6 @@
 				6003F5AA195388D20070C39A /* Sources */,
 				6003F5AB195388D20070C39A /* Frameworks */,
 				6003F5AC195388D20070C39A /* Resources */,
-				140F843868DDF411000E1193 /* [CP] Embed Pods Frameworks */,
-				995E02D36228C6BCC091DB59 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -305,54 +302,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		140F843868DDF411000E1193 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-PYH5Bridge_Tests/Pods-PYH5Bridge_Tests-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/FBSnapshotTestCase/FBSnapshotTestCase.framework",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSnapshotTestCase.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-PYH5Bridge_Tests/Pods-PYH5Bridge_Tests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		5CC3AB8EF1FBD743A5FBA01A /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-PYH5Bridge_Example/Pods-PYH5Bridge_Example-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		995E02D36228C6BCC091DB59 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-PYH5Bridge_Tests/Pods-PYH5Bridge_Tests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		BF1BF0AB147995BB9CA806DA /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;

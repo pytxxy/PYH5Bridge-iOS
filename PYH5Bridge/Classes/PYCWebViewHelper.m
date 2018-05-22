@@ -413,14 +413,15 @@ typedef void(^successOpenPaymentApp)(void);
 
 - (void) executeJSFunctionWithString:(NSString *)jsString
 {
+    __weak __typeof(self)weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-        if(_usingUIWebView)
+        if(weakSelf.usingUIWebView)
         {
-            [(UIWebView*)self.realWebView stringByEvaluatingJavaScriptFromString:jsString];
+            [(UIWebView*)weakSelf.realWebView stringByEvaluatingJavaScriptFromString:jsString];
         }
         else
         {
-            return [(WKWebView*)self.realWebView evaluateJavaScript:jsString completionHandler:nil];
+            return [(WKWebView*)weakSelf.realWebView evaluateJavaScript:jsString completionHandler:nil];
         }
     });
     
@@ -526,10 +527,11 @@ typedef void(^successOpenPaymentApp)(void);
     vc.imgArr = imgArr;
     
     vc.currentIndex = 0;
+    __weak __typeof(self)weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-        [_scriptMessageHandler presentViewController:vc animated:YES completion:^{
-            NSString *jsString = [NSString stringWithFormat:@"%@()", self.resultDataDictionary[kPYJSFunc_PreviewImage].successFunName];
-            [self executeJSFunctionWithString:jsString];
+        [weakSelf.scriptMessageHandler presentViewController:vc animated:YES completion:^{
+            NSString *jsString = [NSString stringWithFormat:@"%@()", weakSelf.resultDataDictionary[kPYJSFunc_PreviewImage].successFunName];
+            [weakSelf executeJSFunctionWithString:jsString];
         }];
     });
 }
@@ -730,10 +732,11 @@ typedef void(^successOpenPaymentApp)(void);
             
         }]];
         
+        __weak __typeof(self)weakSelf = self;
         [alert addAction:[UIAlertAction actionWithTitle:@"去设置" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
             //点击按钮的响应事件；
             [PYCUtil openSystemSettingOfApp];
-            _isCheckingAuthorization = YES;
+            weakSelf.isCheckingAuthorization = YES;
         }]];
         //弹出提示框；
         [self.showHUDParentViewController presentViewController:alert animated:true completion:nil];

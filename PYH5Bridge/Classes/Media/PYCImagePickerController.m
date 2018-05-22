@@ -104,10 +104,8 @@ static PYCImagePickerController * static_ZwImagePickerController = nil;
     }
     else
     {
-        if (type != 0)
-        {
-            sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
-        }
+        NSLog(@"暂不支持模拟器");
+        return;
     }
     
     self.imagePickerController.sourceType = sourceType;
@@ -166,10 +164,8 @@ static PYCImagePickerController * static_ZwImagePickerController = nil;
     }
     else
     {
-        if (type != 0)
-        {
-            sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
-        }
+        NSLog(@"暂不支持模拟器");
+        return;
     }
     
     

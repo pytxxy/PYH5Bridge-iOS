@@ -25,6 +25,8 @@ static NSString *const kPYCREDIT_BRIDGE = @"PYCREDIT_BRIDGE";
 - (void)setActionNameArr:(NSArray *)actionNameArrary
 {
     _actionNameArr = [actionNameArrary mutableCopy];
+    __weak __typeof(self)weakSelf = self;
+    
     for (NSString *actionName in _actionNameArr)
     {
         //拍照 相册 方法默认注册实现，不参与回调。
@@ -36,8 +38,8 @@ static NSString *const kPYCREDIT_BRIDGE = @"PYCREDIT_BRIDGE";
                 NSString *jsvalueStr = [jsvalue toString];
                 NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:[jsvalueStr dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
                 
-                if(_delegate && [_delegate respondsToSelector:@selector(takePictureWithData:)]){
-                    [_delegate takePictureWithData:dict];
+                if(weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(takePictureWithData:)]){
+                    [weakSelf.delegate takePictureWithData:dict];
                 }
             };
         } else if ([actionName isEqualToString:kFuncSelectPic]) {
@@ -47,8 +49,8 @@ static NSString *const kPYCREDIT_BRIDGE = @"PYCREDIT_BRIDGE";
                 NSString *jsvalueStr = [jsvalue toString];
                 NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:[jsvalueStr dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
                 
-                if(_delegate && [_delegate respondsToSelector:@selector(selectPicWithData:)]){
-                    [_delegate selectPicWithData:dict];
+                if(weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(selectPicWithData:)]){
+                    [weakSelf.delegate selectPicWithData:dict];
                 }
                 
             };
@@ -59,8 +61,8 @@ static NSString *const kPYCREDIT_BRIDGE = @"PYCREDIT_BRIDGE";
                 NSString *jsvalueStr = [jsvalue toString];
                 NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:[jsvalueStr dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
                 
-                if(_delegate && [_delegate respondsToSelector:@selector(locationWithData:)]){
-                    [_delegate locationWithData:dict];
+                if(weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(locationWithData:)]){
+                    [weakSelf.delegate locationWithData:dict];
                 }
                 
             };
@@ -71,9 +73,9 @@ static NSString *const kPYCREDIT_BRIDGE = @"PYCREDIT_BRIDGE";
                 {
                     NSString *jsvalueStr = [jsvalue toString];
                     NSDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:[jsvalueStr dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
-                    if(_delegate && [_delegate respondsToSelector:@selector(excuteMethodWithMethodDic:)]){
+                    if(weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(excuteMethodWithMethodDic:)]){
                         dispatch_async(dispatch_get_main_queue(), ^{
-                            [_delegate excuteMethodWithMethodDic:jsonObject];
+                            [weakSelf.delegate excuteMethodWithMethodDic:jsonObject];
                         });
                         
                     }
