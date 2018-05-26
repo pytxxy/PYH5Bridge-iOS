@@ -588,10 +588,11 @@ typedef void(^successOpenPaymentApp)(void);
         cameraDeviceType = UIImagePickerControllerCameraDeviceRear;
     }
     
+    NSInteger maxWidth = _h5CurrentImagesInfo.width.integerValue;
     dispatch_async(dispatch_get_main_queue(), ^{
         self.h5IOImageHelper.imageType = [[[dict objectForKey:@"args"] objectForKey:@"data"] objectForKey:@"imageType"];
         [self.h5IOImageHelper showSelectImageActionSheetWithSelectMaxSum:1
-                                                        maxPixelSize:0
+                                                            maxPixelSize:maxWidth
                                                             needTrim:NO
                                                     cameraDeviceType:cameraDeviceType];
     });

@@ -14,8 +14,13 @@ PYH5Bridge提供源码手动集成及CocoaPods集成这2种集成方式，可任
 在工程的`Podfile`文件中添加：
 
 ```objc
-	pod 'PYH5Bridge', '~> 1.2.0'
+	pod 'PYH5Bridge', '~> 1.2.2'
 ```  
+若项目是采用`Swift`语言，在`Podfile`文件中还需加上:  
+
+```objc
+use_frameworks!
+```
 保存并执行`pod install`命令，即可将PYH5Bridge集成到已有工程中。  
 若要更新版本，执行`pod update`命令即可将`PYH5Bridge`更新到最新兼容版本。
 
@@ -59,8 +64,10 @@ PYH5Bridge提供源码手动集成及CocoaPods集成这2种集成方式，可任
 
 ### 3. 使用说明  
 
-PYH5Bridge提供了WebView的PYCWebViewHelper类，用于设置WebView的JS Bridge。
+PYH5Bridge提供了WebView的PYCWebViewHelper类，用于设置WebView的JS Bridge。以下代码仅供参考：
       
+Objective-C
+
 ```objc
 #import "PYCWebViewHelper.h" 
 
@@ -132,6 +139,114 @@ PYH5Bridge提供了WebView的PYCWebViewHelper类，用于设置WebView的JS Brid
 }
 ```
 
+Swift
+
+```swift
+import UIKit
+import WebKit
+// 自动布局组件
+import SnapKit
+import PYH5Bridge
+
+class PYH5BridgeTest: UIViewController, WKUIDelegate, WKNavigationDelegate, UIWebViewDelegate {
+    public var useWKWebView = true
+    public var serverURL: String?
+    var webView: UIView?
+    var webViewHelper: PYCWebViewHelper?
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.customBackItem()
+        
+        self.title = self.useWKWebView ? "WKWebView" : "UIWebView"
+        self.initWebView()
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        
+    }
+    
+    func initWebView() -> Void {
+        if self.useWKWebView {
+            let webConfig = WKWebViewConfiguration()
+            let wkWebView = WKWebView(frame: .zero, configuration: webConfig)
+            
+            //WKWebView必须实现navigationDelegate和UIDelegate
+            wkWebView.uiDelegate = self
+            wkWebView.navigationDelegate = self
+            
+            self.webView = wkWebView
+        } else {
+            let uiWebView = UIWebView(frame: .zero)
+            //UIWebView必须实现UIWebViewDelegate
+            uiWebView.delegate = self
+            
+            self.webView = uiWebView;
+        }
+        self.view.addSubview(webView!)
+        
+        webView!.snp.makeConstraints { (make) -> Void in
+            make.width.equalToSuperview()
+            if #available(iOS 11.0, *) {
+                make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
+            }
+            else {
+                make.top.equalToSuperview()
+            }
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
+        }
+        
+        if let urlString = self.serverURL  {
+            let urlRequest = URLRequest(url: URL(string: urlString)!)
+            
+            if self.useWKWebView {
+                (self.webView as? WKWebView)?.load(urlRequest)
+            }
+            else {
+                (self.webView as? UIWebView)?.loadRequest(urlRequest)
+            }
+            
+            // 无广告的初始化方法，与有广告的初始化方法二者选其一
+            self.webViewHelper = PYCWebViewHelper(url: nil, webViewHelperBlock: nil)
+            // 有广告的初始化方法，URL为图片链接（建议使用https协议链接应对苹果后续的ATS政策），Block为用户点击广告时的回调方法
+            self.webViewHelper = PYCWebViewHelper(url: "https://www.xxx.com/xxx.png", webViewHelperBlock: { (urlString: String?) -> () in
+                //可以自由跳转WebView或App内部模块
+                })
+            self.webViewHelper?.addScriptMessageHandler(toWebView: self.webView, webViewDelegate: self)
+        }
+    }
+    
+    // MARK: WKUIDelegate
+    public func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView?
+    {
+        return self.webViewHelper?.pyWebView(webView, createWebViewWith: configuration, for: navigationAction, windowFeatures: windowFeatures)
+    }
+    
+    //MARK: WKNavigationDelegate
+    public func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Swift.Void)
+    {
+        self.webViewHelper?.pycWebView(webView, decidePolicyFor: navigationAction, decisionHandler: decisionHandler)
+    }
+    
+    public func webViewWebContentProcessDidTerminate(_ webView: WKWebView)
+    {
+        self.webViewHelper?.pyWebViewWebContentProcessDidTerminate(webView)
+    }
+    
+    //MARK: UIWebViewDelegate
+    public func webView(_ webView: UIWebView, shouldStartLoadWith request: URLRequest, navigationType: UIWebViewNavigationType) -> Bool
+    {
+        return (self.webViewHelper?.pycWebView(webView, shouldStartLoadWith: request, navigationType: navigationType))!
+    }
+    
+    public func webViewDidFinishLoad(_ webView: UIWebView)
+    {
+        self.webViewHelper?.pyWebViewDidFinishLoad(webView)
+    }
+}
+```
+
 ### 4. 其他功能
 这一节中描述了一些增强用户体验的设置或额外功能，用户可根据项目实际情况考虑是否采用。  
 
@@ -140,6 +255,8 @@ PYH5Bridge提供了WebView的PYCWebViewHelper类，用于设置WebView的JS Brid
   
   
 在WebView所在ViewController`"xxxxViewController.m"`中添加代码：  
+
+Objective-C
 
 ```objc
 - (void)customBackButton  
@@ -159,11 +276,50 @@ PYH5Bridge提供了WebView的PYCWebViewHelper类，用于设置WebView的JS Brid
 }
 ```
   
+Swift
+
+```swift
+func customBackItem() -> Void {
+    let backItem = UIBarButtonItem(title: "返回", style: .plain, target: self, action: #selector(backBtnClicked))
+    self.navigationItem.leftBarButtonItem = backItem
+}
+
+@objc func backBtnClicked(sender: AnyObject?) -> Void {
+    var canGoBack = false
+    
+    if self.useWKWebView {
+        if let wkWebView = self.webView as? WKWebView {
+            canGoBack = wkWebView.canGoBack
+            if canGoBack {
+                wkWebView.goBack()
+            }
+        }
+        
+    } else {
+        if let uiwebView = self.webView as? UIWebView {
+            canGoBack = uiwebView.canGoBack
+            if canGoBack {
+                uiwebView.goBack()
+            }
+        }
+    }
+    
+    if canGoBack {
+        self.closeAndBackItem()
+    } else {
+        self.navigationController?.popViewController(animated: true)
+    }
+}    
+```
+
+ 
 #### 4.2 添加广告
 可以在H5页面底部添加一个广告，用于展示指定图片（尺寸为1080 * 286），用户点击图片广告后将会回调App预先设置的方法进行处理。  
 由于H5页面使用了https协议，因浏览器安全限制，广告图片的链接必须使用https协议，否则图片无法加载和展示。点击广告后指向的页面链接不受限制，可以是http或https协议的。   
 > 使用此功能时，需提前与天下信用沟通，否则可能无法生效。  
  
+Objective-C
+
 ```objc
 - (void)viewDidLoad {  
    [super viewDidLoad];  
@@ -179,7 +335,7 @@ PYH5Bridge提供了WebView的PYCWebViewHelper类，用于设置WebView的JS Brid
 
 　　 //无广告的初始化方法  
 　　_pycWebViewHelper = [[PYCWebViewHelper alloc] init];  
- 　　//有广告的初始化方法，URL为图片链接（建议使用https协议链接应对苹果的ATS政策），Block为用户点击广告时的回调方法  
+ 　　//有广告的初始化方法，URL为图片链接（建议使用https协议链接应对苹果后续的ATS政策），Block为用户点击广告时的回调方法  
     　　_pycWebViewHelper = [[PYCWebViewHelper alloc] initWithUrl:@"https://www.xxx.com/xxx.png" webViewHelperBlock:^(NSString *urlString) {  
         　　　　//可以自由跳转WebView或App内部模块
         　　  
@@ -191,9 +347,23 @@ PYH5Bridge提供了WebView的PYCWebViewHelper类，用于设置WebView的JS Brid
 }  
 ```
 
+Swift
+
+```swift
+// 无广告的初始化方法，与有广告的初始化方法二者选其一
+self.webViewHelper = PYCWebViewHelper(url: nil, webViewHelperBlock: nil)
+// 有广告的初始化方法，URL为图片链接（建议使用https协议链接应对苹果后续的ATS政策），Block为用户点击广告时的回调方法
+self.webViewHelper = PYCWebViewHelper(url: "https://www.xxx.com/xxx.png", webViewHelperBlock: { (urlString: String?) -> () in
+    //可以自由跳转WebView或App内部模块
+    })
+```
+
+
 #### 4.3 竖屏展示H5页面
 为了更好的用户使用体验，建议在竖屏状态下展示H5页面，在`PYH5Bridge_Example`中有相应实现代码供参考。  
 部分代码展示：  
+
+Objective-C
 
 ```objc
 - (BOOL)shouldAutorotate 
@@ -205,13 +375,47 @@ PYH5Bridge提供了WebView的PYCWebViewHelper类，用于设置WebView的JS Brid
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations  
 {  
     　　return UIInterfaceOrientationMaskPortrait;  
-}  
+} 
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    //设置竖屏
+    [[UIDevice currentDevice] setValue:[NSNumber numberWithInt:UIInterfaceOrientationPortrait] forKey:@"orientation"];
+} 
 ```
+
+Swift
+
+```swift
+// UIViewController中添加
+override var shouldAutorotate: Bool {
+    return true
+}
+    
+override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+    return [.portrait, .portraitUpsideDown]
+}
+
+//若使用了UINavigationController，则需扩展UINavigationController
+extension UINavigationController {
+    override open var shouldAutorotate: Bool {
+        return visibleViewController?.shouldAutorotate ?? true  // 默认为true
+    }
+    
+    override open var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return visibleViewController?.supportedInterfaceOrientations ?? [.all]  // 默认支持所有方向
+    }
+}
+```
+
 
 #### 4.4 添加关闭按钮
 用户在访问H5页面时，若进入的层级较深，只能点击多次"返回"按钮来退出当前ViewController，无法一次性关闭当前界面。目前比较通用的方法是添加关闭按钮来直接关闭当前界面。  
 
 在`PYH5Bridge_Example`中有相应实现代码供参考,部分代码如下：  
+
+Objective-C
 
 ```objc
 UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithTitle:@"返回"  
@@ -245,4 +449,43 @@ self.navigationItem.leftBarButtonItems = [NSArray arrayWithObjects:backItem,clos
 }  
 ```
   
-   
+Swift
+
+```swift
+func closeAndBackItem() -> Void {
+    let backItem = UIBarButtonItem(title: "返回", style: .plain, target: self, action: #selector(backBtnClicked))
+    let closeItem = UIBarButtonItem(title: "关闭", style: .plain, target: self, action: #selector(closeBtnClicked))
+    self.navigationItem.leftBarButtonItems = [backItem, closeItem]
+}
+    
+@objc func backBtnClicked(sender: AnyObject?) -> Void {
+    var canGoBack = false
+    
+    if self.useWKWebView {
+        if let wkWebView = self.webView as? WKWebView {
+            canGoBack = wkWebView.canGoBack
+            if canGoBack {
+                wkWebView.goBack()
+            }
+        }
+        
+    } else {
+        if let uiwebView = self.webView as? UIWebView {
+            canGoBack = uiwebView.canGoBack
+            if canGoBack {
+                uiwebView.goBack()
+            }
+        }
+    }
+    
+    if canGoBack {
+        self.closeAndBackItem()
+    } else {
+        self.navigationController?.popViewController(animated: true)
+    }
+}
+
+@objc func closeBtnClicked(sender: Any?) -> Void {
+    self.navigationController?.popViewController(animated: true)
+}
+```

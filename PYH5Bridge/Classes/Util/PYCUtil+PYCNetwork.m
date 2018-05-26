@@ -109,11 +109,14 @@ static NSString *kHeightString              = @"height";
                         //上传文件参数
                         NSString *localIdUrlString = [obj objectForKey:@"localId"];
                         NSString *fileName = localIdUrlString.length > 0?[[localIdUrlString componentsSeparatedByString:@"/"] lastObject]:@"";
-                        UIImage *localImage = [UIImage imageNamed:[obj objectForKey:@"localId"]];
-                        NSData *imageData = UIImagePNGRepresentation(localImage);
                         
                         //这个就是参数
-                        [formData appendPartWithFileData:imageData name:[obj objectForKey:@"dataKey"] fileName:fileName mimeType:@"image/png"];
+                        NSError *error;
+                        [formData appendPartWithFileURL:[NSURL fileURLWithPath:localIdUrlString] name:[obj objectForKey:@"dataKey"] fileName:fileName mimeType:@"image/png" error:&error];
+                        if (error != nil) {
+                            NSLog(@"upload file error: %@", error.localizedDescription);
+                        }
+//                        [formData appendPartWithFileData:imageData name:[obj objectForKey:@"dataKey"] fileName:fileName mimeType:@"image/png"];
                     }];
                 }
                 
