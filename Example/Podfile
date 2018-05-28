@@ -4,6 +4,7 @@ inhibit_all_warnings!
 
 target 'PYH5Bridge_Example' do
     pod 'PYH5Bridge', :path => '../'
+    #pod 'PYH5Bridge', '~> 1.2.2'
   
   target 'PYH5Bridge_Tests' do
     inherit! :search_paths

@@ -10,7 +10,6 @@
 #import <sys/utsname.h>
 #import <AVFoundation/AVCaptureDevice.h>
 #import <AVFoundation/AVMediaFormat.h>
-#import <Photos/PHPhotoLibrary.h>
 #import <sys/utsname.h>
 
 @implementation PYCUtil (PYCAppAndServiceInfo)
@@ -37,38 +36,6 @@
     NSString *deviceName = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
     
     return deviceName;
-}
-
-
-+ (BOOL)hasPhotosRights {
-    __block BOOL bReturn = NO;
-    PHAuthorizationStatus authStatus = [PHPhotoLibrary authorizationStatus];
-    if (authStatus == PHAuthorizationStatusRestricted || authStatus == PHAuthorizationStatusDenied)
-    {
-        return NO;
-    }
-    else if (authStatus == PHAuthorizationStatusNotDetermined)//如果是第一次打开
-    {
-        dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-        
-        [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
-            if (status == PHAuthorizationStatusAuthorized)
-            {
-                //用户明确许可与否，媒体需要捕获，但用户尚未授予或拒绝许可。
-                bReturn = YES;
-                dispatch_semaphore_signal(sema);
-            }
-            else{
-                bReturn = NO;
-                dispatch_semaphore_signal(sema);
-            } }];
-        
-        dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-    }
-    else
-        bReturn = YES;
-    
-    return bReturn;
 }
 
 + (BOOL)hasCameraRights:(BOOL *)isFirstSetting {

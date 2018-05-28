@@ -24,9 +24,6 @@
 
 #pragma mark App Authorization Status
 
-/** 判断App是否有访问照片权限 */
-+ (BOOL)hasPhotosRights;
-
 
 /**
  判断App是否有访问相机权限

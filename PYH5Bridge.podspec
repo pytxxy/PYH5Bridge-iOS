@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
     s.name             = 'PYH5Bridge'
-    s.version          = '1.2.2'
+    s.version          = '1.2.3'
     s.summary          = 'PYH5Bridge SDK'
     
     # This description is used to generate tags and improve search results.
@@ -39,7 +39,7 @@ Pod::Spec.new do |s|
     # }
     
     # s.public_header_files = 'Pod/Classes/**/*.h'
-    s.frameworks = 'AVFoundation', 'JavaScriptCore', 'CoreMedia', 'SystemConfiguration', 'MobileCoreServices', 'Photos'
+    s.frameworks = 'AVFoundation', 'JavaScriptCore', 'CoreMedia', 'SystemConfiguration', 'MobileCoreServices'
     s.libraries  = 'z', 'resolv.9'
     s.dependency 'AFNetworking', '~> 3.0'
     s.dependency 'MBProgressHUD', '~> 1.1.0'

@@ -28,7 +28,7 @@
 #import "AFHTTPSessionManager.h"
 #import "PYCUtil+PYCNetwork.h"
 
-static NSString * const kSdkVersion = @"1.2.0";
+static NSString * const kSdkVersion = @"1.2.3";
 
 static NSString * const kPYJSFunc_CameraGetImage    = @"cameraGetImage";//拍照方法
 static NSString * const kPYJSFunc_PreviewImage      = @"previewImage";//原图预览方法

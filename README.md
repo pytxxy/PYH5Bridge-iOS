@@ -34,7 +34,6 @@ use_frameworks!
 * `libresolv.9.tbd`  
 * `JavaScriptCore.framework`  
 * `SystemConfiguration.framework`  
-* `Photos.framework`  
 * `MobileCoreServices.framework`  
 * `CoreMedia.framework`  
 
