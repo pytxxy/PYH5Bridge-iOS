@@ -14,7 +14,7 @@ PYH5Bridge提供源码手动集成及CocoaPods集成这2种集成方式，可任
 在工程的`Podfile`文件中添加：
 
 ```objc
-	pod 'PYH5Bridge', '~> 1.2.2'
+	pod 'PYH5Bridge', '~> 1.2.3'
 ```  
 若项目是采用`Swift`语言，在`Podfile`文件中还需加上:  
 
