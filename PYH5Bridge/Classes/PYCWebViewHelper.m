@@ -27,6 +27,7 @@
 #import "PYCJSBaseWebViewModel.h"
 #import "AFHTTPSessionManager.h"
 #import "PYCUtil+PYCNetwork.h"
+#import <Photos/Photos.h>
 
 static NSString * const kSdkVersion = @"1.2.3";
 
@@ -40,7 +41,7 @@ static NSString * const kPYJSFunc_GetAppInfo        = @"getAppInfo";//获取 SDK
 static NSString * const kPYJSFunc_Authorization     = @"authorization";//检测权限授权情况
 static NSString * const kPYJSFunc_Request           = @"request"; //H5请求
 static NSString * const kPYJSFunc_RequestTime       = @"getRequestTime"; //H5请求
-
+static NSString * const kPYJSFunc_SaveImage         = @"saveImageData"; // 存储照片到相册
 
 /**
  用户请求权限及返回结果
@@ -160,6 +161,7 @@ typedef void(^successOpenPaymentApp)(void);
                              kPYJSFunc_Authorization,
                              kPYJSFunc_Request,
                              kPYJSFunc_RequestTime,
+                             kPYJSFunc_SaveImage,
                              nil];
     }
     
@@ -294,6 +296,9 @@ typedef void(^successOpenPaymentApp)(void);
     }
     else if ([resultData.action isEqualToString:kPYJSFunc_RequestTime]) {
         [self actionRequestTime:dict];
+    }
+    else if ([resultData.action isEqualToString:kPYJSFunc_SaveImage]) {
+        [self actionSaveImage:dict];
     }
 }
 
@@ -767,6 +772,39 @@ typedef void(^successOpenPaymentApp)(void);
     jsString = [NSString stringWithFormat:@"%@({\"time\":\"%@\"})", self.resultDataDictionary[kPYJSFunc_RequestTime].successFunName, timeString];
     
     [self executeJSFunctionWithString:jsString];
+}
+
+- (void)actionSaveImage:(NSDictionary *)dict
+{
+    if ([PYCUtil hasPhotoLibraryPermission]) {
+        NSDictionary *data = dict[@"args"][@"data"];
+        NSString *imageBase64Str = data[@"data"];
+        if (imageBase64Str.length > 0) {
+            NSURL *imageURL = [NSURL URLWithString:imageBase64Str];
+            NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
+            if (imageData != nil)
+            {
+                UIImage *image = [UIImage imageWithData:imageData];
+                [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+                    PHAssetChangeRequest *changeRequest = [PHAssetChangeRequest creationRequestForAssetFromImage:image];
+                    PHObjectPlaceholder *assetPlaceholder = [changeRequest placeholderForCreatedAsset];
+                    NSLog(@"保存成功，资源标识符：%@", assetPlaceholder.localIdentifier);
+                } completionHandler:^(BOOL success, NSError *error) {
+                    if (success) {
+                        NSString *jsString = [NSString stringWithFormat:@"%@()", self.resultDataDictionary[kPYJSFunc_SaveImage].successFunName];
+                        [self executeJSFunctionWithString:jsString];
+                    } else {
+                        NSString *jsString = [NSString stringWithFormat:@"%@()", self.resultDataDictionary[kPYJSFunc_SaveImage].errorFunName];
+                        [self executeJSFunctionWithString:jsString];
+                    }
+                }];
+            } else {
+                NSString *jsString = [NSString stringWithFormat:@"%@()", self.resultDataDictionary[kPYJSFunc_SaveImage].errorFunName];
+                [self executeJSFunctionWithString:jsString];
+            }
+        }
+    }
+
 }
 
 #pragma mark actionFuns End.

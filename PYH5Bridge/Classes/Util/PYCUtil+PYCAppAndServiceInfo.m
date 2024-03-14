@@ -11,6 +11,7 @@
 #import <AVFoundation/AVCaptureDevice.h>
 #import <AVFoundation/AVMediaFormat.h>
 #import <sys/utsname.h>
+#import <Photos/Photos.h>
 
 @implementation PYCUtil (PYCAppAndServiceInfo)
 
@@ -109,6 +110,25 @@
         bReturn = YES;
     
     return bReturn;
+}
+
++ (BOOL)hasPhotoLibraryPermission {
+    PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
+    if (status == PHAuthorizationStatusAuthorized) {
+        // 如果已经获得权限
+        return YES;
+    } else if (status == PHAuthorizationStatusDenied) {
+        // 如果权限被拒绝
+        return NO;
+    } else if (status == PHAuthorizationStatusNotDetermined) {
+        // 如果权限还未决定，请求相册访问权限
+        __block BOOL hasPermission = NO;
+        [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus authorizationStatus) {
+            hasPermission = (authorizationStatus == PHAuthorizationStatusAuthorized);
+        }];
+        return hasPermission;
+    }
+    return NO;
 }
 
 + (CGFloat) screenWidth

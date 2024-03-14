@@ -40,6 +40,10 @@
  */
 + (BOOL)hasAudioRights:(BOOL *)isFirstSetting;
 
+
+/// 判断是否有操作相册权限
++ (BOOL)hasPhotoLibraryPermission;
+
 #pragma mark -- devieceInfo
 /** 屏幕宽 */
 + (CGFloat)screenWidth;
