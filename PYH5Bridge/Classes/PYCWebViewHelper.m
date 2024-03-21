@@ -779,30 +779,33 @@ typedef void(^successOpenPaymentApp)(void);
     if ([PYCUtil hasPhotoLibraryPermission]) {
         NSDictionary *data = dict[@"args"][@"data"];
         NSString *imageBase64Str = data[@"data"];
-        if (imageBase64Str.length > 0) {
-            NSURL *imageURL = [NSURL URLWithString:imageBase64Str];
-            NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
-            if (imageData != nil)
-            {
-                UIImage *image = [UIImage imageWithData:imageData];
-                [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-                    PHAssetChangeRequest *changeRequest = [PHAssetChangeRequest creationRequestForAssetFromImage:image];
-                    PHObjectPlaceholder *assetPlaceholder = [changeRequest placeholderForCreatedAsset];
-                    NSLog(@"保存成功，资源标识符：%@", assetPlaceholder.localIdentifier);
-                } completionHandler:^(BOOL success, NSError *error) {
-                    if (success) {
-                        NSString *jsString = [NSString stringWithFormat:@"%@()", self.resultDataDictionary[kPYJSFunc_SaveImage].successFunName];
-                        [self executeJSFunctionWithString:jsString];
-                    } else {
-                        NSString *jsString = [NSString stringWithFormat:@"%@()", self.resultDataDictionary[kPYJSFunc_SaveImage].errorFunName];
-                        [self executeJSFunctionWithString:jsString];
-                    }
-                }];
+        if (imageBase64Str.length == 0) {
+            NSString *jsString = [NSString stringWithFormat:@"%@()", self.resultDataDictionary[kPYJSFunc_SaveImage].errorFunName];
+            [self executeJSFunctionWithString:jsString];
+            return;
+        }
+        
+        NSURL *imageURL = [NSURL URLWithString:imageBase64Str];
+        NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
+        if (imageData == nil) {
+            NSString *jsString = [NSString stringWithFormat:@"%@()", self.resultDataDictionary[kPYJSFunc_SaveImage].errorFunName];
+            [self executeJSFunctionWithString:jsString];
+            return;
+        }
+        UIImage *image = [UIImage imageWithData:imageData];
+        [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+            PHAssetChangeRequest *changeRequest = [PHAssetChangeRequest creationRequestForAssetFromImage:image];
+            PHObjectPlaceholder *assetPlaceholder = [changeRequest placeholderForCreatedAsset];
+            NSLog(@"保存成功，资源标识符：%@", assetPlaceholder.localIdentifier);
+        } completionHandler:^(BOOL success, NSError *error) {
+            if (success) {
+                NSString *jsString = [NSString stringWithFormat:@"%@()", self.resultDataDictionary[kPYJSFunc_SaveImage].successFunName];
+                [self executeJSFunctionWithString:jsString];
             } else {
                 NSString *jsString = [NSString stringWithFormat:@"%@()", self.resultDataDictionary[kPYJSFunc_SaveImage].errorFunName];
                 [self executeJSFunctionWithString:jsString];
             }
-        }
+        }];
     }
 
 }
